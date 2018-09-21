@@ -1,0 +1,11 @@
+*.exe
+*.obj
+*.tlog
+*.suo
+*.pdb
+*.filters
+*.vcxproj
+*.ilk
+*.log
+*.user
+*moc_*.cpp
