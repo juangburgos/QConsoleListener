@@ -26,5 +26,5 @@ void QConsoleListener::readCommand(int socket)
     std::string line;
     std::getline(std::cin, line);
 	QString strLine = QString::fromStdString(line);
-	emit this->newLine(strLine);
+	Q_EMIT this->newLine(strLine);
 }

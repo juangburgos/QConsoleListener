@@ -20,11 +20,11 @@ Include the header `#include <QConsoleListener>` and connect to the `QConsoleLis
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+	QCoreApplication a(argc, argv);
 
 	// listen to console input
 	QConsoleListener console;
-	QObject::connect(&console, &QConsoleListener::newLine, &a, [&a](const QString &strNewLine) {
+		QObject::connect(&console, &QConsoleListener::newLine, [&a](const QString &strNewLine) {
 		qDebug() << "Echo :" << strNewLine;
 		// quit
 		if (strNewLine.compare("q", Qt::CaseInsensitive) == 0)
@@ -33,9 +33,9 @@ int main(int argc, char *argv[])
 			a.quit();
 		}
 	});
-	
+
 	qDebug() << "Listening to console input:";
-    return a.exec();
+	return a.exec();
 }
 ```
 

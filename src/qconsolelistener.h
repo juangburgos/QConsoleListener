@@ -17,7 +17,7 @@ class QConsoleListener : public QObject
 public:
     QConsoleListener();
 
-signals:
+Q_SIGNALS:
     void newLine(const QString &strNewLine);
 
 private:
@@ -27,7 +27,7 @@ private:
     QSocketNotifier *m_notifier;
 #endif
 
-private slots:
+private Q_SLOTS:
 #ifdef Q_OS_WIN
 	void readCommand(Qt::HANDLE hEvent);
 #else
