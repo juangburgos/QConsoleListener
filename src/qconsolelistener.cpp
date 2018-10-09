@@ -4,7 +4,7 @@
 QConsoleListener::QConsoleListener()
 {
 #ifdef Q_OS_WIN
-    m_notifier = new QWinEventNotifier(GetStdHandle(STD_INPUT_HANDLE));
+    m_notifier = new QWinEventNotifier(GetStdHandle(STD_INPUT_HANDLE), this);
 	QObject::connect(m_notifier, &QWinEventNotifier::activated, this, &QConsoleListener::readCommand);
 #else
     m_notifier = new QSocketNotifier(fileno(stdin), QSocketNotifier::Read, this);
