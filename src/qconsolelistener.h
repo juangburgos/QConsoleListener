@@ -16,7 +16,7 @@ class QConsoleListener : public QObject
 
 public:
     QConsoleListener();
-
+    ~QConsoleListener();
 Q_SIGNALS:
     void newLine(const QString &strNewLine);
 

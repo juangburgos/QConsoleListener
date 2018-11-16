@@ -28,3 +28,9 @@ void QConsoleListener::readCommand(int socket)
 	QString strLine = QString::fromStdString(line);
 	Q_EMIT this->newLine(strLine);
 }
+
+QConsoleListener::~QConsoleListener()
+{
+    delete m_notifier;
+    m_notifier = nullptr;
+}
