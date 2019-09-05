@@ -24,7 +24,8 @@ int main(int argc, char *argv[])
 
 	// listen to console input
 	QConsoleListener console;
-		QObject::connect(&console, &QConsoleListener::newLine, [&a](const QString &strNewLine) {
+	QObject::connect(&console, &QConsoleListener::newLine, 
+	[&a](const QString &strNewLine) {
 		qDebug() << "Echo :" << strNewLine;
 		// quit
 		if (strNewLine.compare("q", Qt::CaseInsensitive) == 0)
