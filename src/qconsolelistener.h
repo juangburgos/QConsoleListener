@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QThread>
 #include <iostream>
 
 #ifdef Q_OS_WIN
@@ -17,8 +18,12 @@ class QConsoleListener : public QObject
 public:
     QConsoleListener();
     ~QConsoleListener();
+
 Q_SIGNALS:
+	// connect to "newLine" to receive console input
     void newLine(const QString &strNewLine);
+	// finishedGetLine if for internal use
+	void finishedGetLine(const QString &strNewLine);
 
 private:
 #ifdef Q_OS_WIN
@@ -28,9 +33,8 @@ private:
 #endif
 
 private Q_SLOTS:
-#ifdef Q_OS_WIN
-	void readCommand(Qt::HANDLE hEvent);
-#else
-	void readCommand(int socket);
-#endif
+	void on_finishedGetLine(const QString &strNewLine);
+
+private:
+	QThread m_thread;
 };

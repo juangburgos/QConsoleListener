@@ -3,34 +3,41 @@
 
 QConsoleListener::QConsoleListener()
 {
+	QObject::connect(
+		this, &QConsoleListener::finishedGetLine,
+		this, &QConsoleListener::on_finishedGetLine, 
+		Qt::QueuedConnection
+	);
 #ifdef Q_OS_WIN
-    m_notifier = new QWinEventNotifier(GetStdHandle(STD_INPUT_HANDLE), this);
-	QObject::connect(m_notifier, &QWinEventNotifier::activated, this, &QConsoleListener::readCommand);
+	m_notifier = new QWinEventNotifier(GetStdHandle(STD_INPUT_HANDLE));
 #else
-    m_notifier = new QSocketNotifier(fileno(stdin), QSocketNotifier::Read, this);
-	QObject::connect(m_notifier, &QSocketNotifier::activated, this, &QConsoleListener::readCommand);
-#endif  
+    m_notifier = new QSocketNotifier(fileno(stdin), QSocketNotifier::Read);
+#endif 
+	// NOTE : move to thread because std::getline blocks, 
+	//        then we sync with main thread using a QueuedConnection with finishedGetLine
+	m_notifier->moveToThread(&m_thread);
+#ifdef Q_OS_WIN
+	QObject::connect(m_notifier, &QWinEventNotifier::activated,
+#else
+	QObject::connect(m_notifier, &QSocketNotifier::activated,
+#endif 
+	[this]() {
+		std::string line;
+		std::getline(std::cin, line);
+		QString strLine = QString::fromStdString(line);
+		Q_EMIT this->finishedGetLine(strLine);
+	});
+	m_thread.start();
 }
 
-#ifdef Q_OS_WIN
-void QConsoleListener::readCommand(Qt::HANDLE hEvent)
-#else
-void QConsoleListener::readCommand(int socket)
-#endif
+void QConsoleListener::on_finishedGetLine(const QString &strNewLine)
 {
-#ifdef Q_OS_WIN
-	Q_UNUSED(hEvent);
-#else
-	Q_UNUSED(socket);
-#endif
-    std::string line;
-    std::getline(std::cin, line);
-	QString strLine = QString::fromStdString(line);
-	Q_EMIT this->newLine(strLine);
+	Q_EMIT this->newLine(strNewLine);
 }
 
 QConsoleListener::~QConsoleListener()
 {
     delete m_notifier;
     m_notifier = nullptr;
+	m_thread.quit();
 }
