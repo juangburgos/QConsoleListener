@@ -16,6 +16,10 @@ QConsoleListener::QConsoleListener()
 	// NOTE : move to thread because std::getline blocks, 
 	//        then we sync with main thread using a QueuedConnection with finishedGetLine
 	m_notifier->moveToThread(&m_thread);
+	QObject::connect(
+		&m_thread , &QThread::finished,
+		m_notifier, &QObject::deleteLater
+	);
 #ifdef Q_OS_WIN
 	QObject::connect(m_notifier, &QWinEventNotifier::activated,
 #else
@@ -37,7 +41,6 @@ void QConsoleListener::on_finishedGetLine(const QString &strNewLine)
 
 QConsoleListener::~QConsoleListener()
 {
-    delete m_notifier;
-    m_notifier = nullptr;
 	m_thread.quit();
+	m_thread.wait();
 }
